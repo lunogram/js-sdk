@@ -12,13 +12,13 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
       - name: Set-up Node
         uses: actions/setup-node@v5
         with:
           node-version: ${{ env.NODEJS_VERSION }}
           cache: 'pnpm'
-      - uses: pnpm/action-setup@v4
-        with:
-          version: ${{ env.PNPM_VERSION }}
       - run: pnpm install
       - run: pnpm run lint
