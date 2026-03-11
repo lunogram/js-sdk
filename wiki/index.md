@@ -21,14 +21,14 @@ A type-safe JavaScript SDK for collecting events and managing users/organization
 ```typescript
 import { Lunogram } from '@lunogram/js-sdk'
 
-Lunogram.initialize({ apiKey: 'your-api-key' })
+const lunogram = new Lunogram('your-api-key')
 
 // User operations
-await Lunogram.user.upsert({ email: 'user@example.com' })
-await Lunogram.user.events([{ name: 'user.signed_up', data: { plan: 'free' } }])
+await lunogram.user.upsert({ email: 'user@example.com' })
+await lunogram.user.events([{ name: 'user.signed_up', data: { plan: 'free' } }])
 
 // Organization operations  
-await Lunogram.organization.upsert({ externalId: 'org-123', name: 'Acme' })
+await lunogram.organization.upsert({ externalId: 'org-123', name: 'Acme' })
 ```
 
 For detailed parameter definitions, see the [Live API Documentation](https://console.lab.lunogram.io/api#client).

@@ -15,18 +15,18 @@ The SDK automatically generates and persists an `anonymousId` for each user.
 ```typescript
 import { Lunogram } from '@lunogram/js-sdk'
 
-Lunogram.initialize({ apiKey: 'your-api-key' })
+const lunogram = new Lunogram('your-api-key')
 
-await Lunogram.user.upsert({ email: 'user@example.com' })
-await Lunogram.user.events([{ name: 'user.signed_up', data: {} }])
+await lunogram.user.upsert({ email: 'user@example.com' })
+await lunogram.user.events([{ name: 'user.signed_up', data: {} }])
 ```
 
 The SDK is exposed on `window.Lunogram` in browsers:
 
 ```html
 <script>
-    Lunogram.initialize({ apiKey: 'your-api-key' })
-    Lunogram.user.events([{ name: 'user.signed_up', data: {} }])
+    const lunogram = new Lunogram('your-api-key')
+    lunogram.user.events([{ name: 'user.signed_up', data: {} }])
 </script>
 ```
 
