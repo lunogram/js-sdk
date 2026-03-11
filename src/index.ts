@@ -1,5 +1,4 @@
 import { BrowserClient } from './platform/browser'
-import { ClientProps } from './types'
 import { ClientNamespace } from './core/factory'
 
 export * from './core/client'
@@ -10,24 +9,18 @@ export * from './types'
 export * from './utils'
 
 export class Lunogram {
-    private static client?: BrowserClient
+    private client: BrowserClient
 
-    static initialize(props: ClientProps) {
-        Lunogram.client = new BrowserClient(props)
+    constructor(apiKey: string, urlEndpoint?: string) {
+        this.client = new BrowserClient({ apiKey, urlEndpoint })
     }
 
-    static get user(): ClientNamespace['user'] {
-        if (!Lunogram.client) {
-            throw new Error('Lunogram: SDK must be initialized with .initialize(props) before use.')
-        }
-        return Lunogram.client.user
+    get user(): ClientNamespace['user'] {
+        return this.client.user
     }
 
-    static get organization(): ClientNamespace['organization'] {
-        if (!Lunogram.client) {
-            throw new Error('Lunogram: SDK must be initialized with .initialize(props) before use.')
-        }
-        return Lunogram.client.organization
+    get organization(): ClientNamespace['organization'] {
+        return this.client.organization
     }
 }
 
