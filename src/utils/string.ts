@@ -2,10 +2,11 @@ import { JSONValue } from '../types'
 
 export const camelToUnderscore = (key: string) => key.replace(/([A-Z])/g, "_$1").toLowerCase()
 
-export function mapKeys(value: Record<string, JSONValue>): Record<string, JSONValue>
-export function mapKeys(value: Record<string, JSONValue>[]): Record<string, JSONValue>[]
-export function mapKeys(value: Record<string, JSONValue> | Record<string, JSONValue>[]): Record<string, JSONValue> | Record<string, JSONValue>[]
-export function mapKeys(value: Record<string, JSONValue> | Record<string, JSONValue>[]): Record<string, JSONValue> | Record<string, JSONValue>[] {
+export function mapKeys(value: JSONValue): JSONValue {
+    if (value === null || typeof value !== 'object') {
+        return value
+    }
+
     if (Array.isArray(value)) {
         return value.map((item) => mapKeys(item))
     }

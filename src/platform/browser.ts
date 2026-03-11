@@ -1,46 +1,61 @@
 import { Client } from '../core/client'
-import { ClientProps, TrackProps, EventProps, IdentifyProps, AliasProps } from '../types'
+import { ClientProps } from '../types'
 import { generateUuid } from '../utils'
+import { UserResource } from '../core/resources/user'
+import { HttpHandler } from '../core/http'
+import {
+    UpsertUserRequest,
+    DeleteUserRequest,
+    UserEvent,
+} from '../types'
+
+class BrowserUserResource extends UserResource {
+    #anonymousId: string
+    #externalId?: string
+
+    constructor(http: HttpHandler) {
+        super(http)
+        this.#anonymousId = generateUuid()
+    }
+
+    #injectIds<T extends { anonymousId?: string; externalId?: string }>(data: T): T {
+        this.#externalId = data.externalId ?? this.#externalId
+        return {
+            ...data,
+            anonymousId: data.anonymousId ?? this.#anonymousId,
+            externalId: data.externalId ?? this.#externalId,
+        }
+    }
+
+    async upsert(data: UpsertUserRequest) {
+        const injected = this.#injectIds(data)
+        return super.upsert(injected)
+    }
+
+    async delete(data: DeleteUserRequest) {
+        const injected = this.#injectIds(data)
+        return super.delete(injected)
+    }
+
+    async events(data: UserEvent[]) {
+        const injected = data.map(event => this.#injectIds(event))
+        return super.events(injected)
+    }
+
+    get anonymousId() {
+        return this.#anonymousId
+    }
+
+    get externalId() {
+        return this.#externalId
+    }
+}
 
 export class BrowserClient extends Client {
-    #anonymousId: string = generateUuid()
-    #externalId?: string
-    #client: Client
+    readonly user: BrowserUserResource
 
     constructor(props: ClientProps) {
         super(props)
-        this.#client = new Client(props)
-    }
-
-    async track(props: TrackProps) {
-        return await this.#client.track({
-            ...props,
-            anonymousId: props.anonymousId ?? this.#anonymousId,
-            externalId: props.externalId ?? this.#externalId,
-        })
-    }
-
-    async events(props: EventProps[]) {
-        return await this.#client.events(props.map((event) => {
-            return {
-                ...event,
-                anonymousId: event.anonymousId ?? this.#anonymousId,
-                externalId: event.externalId ?? this.#externalId,
-            }
-        }))
-    }
-
-    async identify(props: IdentifyProps) {
-        this.#externalId = props.externalId
-        return await this.#client.identify({
-            ...props,
-            anonymousId: props.anonymousId ?? this.#anonymousId,
-            externalId: props.externalId ?? this.#externalId,
-        })
-    }
-
-    async alias(props: AliasProps) {
-        this.#externalId = props.externalId
-        return await this.#client.alias(props)
+        this.user = new BrowserUserResource(super.httpHandler)
     }
 }

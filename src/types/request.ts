@@ -1,32 +1,50 @@
 import { JSONValue } from './common'
 
-export type TrackProps = {
-    event: string
-    anonymousId?: string
+export interface UpsertUserRequest {
     externalId?: string
-    properties: Record<string, JSONValue>
+    anonymousId?: string
+    email?: string
+    phone?: string
+    timezone?: string
+    locale?: string
+    data?: Record<string, JSONValue>
 }
 
-export type EventProps = {
+export interface DeleteUserRequest {
+    externalId?: string
+    anonymousId?: string
+}
+
+export interface UserEvent {
     name: string
     anonymousId?: string
     externalId?: string
-    properties?: Record<string, JSONValue>
+    data: Record<string, JSONValue>
 }
 
-export type IdentifyProps = {
-    anonymousId?: string
+export interface OrganizationRequest {
     externalId: string
-    phone?: string
-    email?: string
-    timezone?: string
-    locale?: string
-    traits: Record<string, JSONValue>
+    name?: string
+    data?: Record<string, JSONValue>
 }
 
-export type AliasProps = {
-    anonymousId: string
+export interface DeleteOrganizationRequest {
     externalId: string
 }
 
-export type InternalPayload = Record<string, JSONValue>
+export interface OrganizationUserRequest {
+    organizationExternalId: string
+    userExternalId: string
+    data?: Record<string, JSONValue>
+}
+
+export interface RemoveOrganizationUserRequest {
+    organizationExternalId: string
+    userExternalId: string
+}
+
+export interface OrganizationEvent {
+    organizationExternalId: string
+    name: string
+    data?: Record<string, JSONValue>
+}

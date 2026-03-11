@@ -1,62 +1,20 @@
-import { ClientProps, TrackProps, EventProps, IdentifyProps, AliasProps, InternalPayload } from '../types'
-import { DefaultEndpoint } from './constants'
-import { mapKeys } from '../utils'
+import { ClientProps } from '../types'
+import { HttpHandler } from './http'
+import { createClientNamespace, ClientNamespace } from './factory'
 
 export class Client {
-    #apiKey: string
-    #urlEndpoint: string
+    readonly user: ClientNamespace['user']
+    readonly organization: ClientNamespace['organization']
+    readonly #http: HttpHandler
 
     constructor(props: ClientProps) {
-        this.#apiKey = props.apiKey
-        this.#urlEndpoint = props.urlEndpoint ?? DefaultEndpoint
+        this.#http = new HttpHandler(props)
+        const namespace = createClientNamespace(this.#http)
+        this.user = namespace.user
+        this.organization = namespace.organization
     }
 
-    async track({ properties: data, ...props }: TrackProps) {
-        return await this.#request('track', { ...props, data })
-    }
-
-    async events(props: EventProps[]) {
-        const payload: InternalPayload[] = props.map(({ properties: data, ...rest }) => ({
-            ...rest,
-            data: data ?? {},
-        }))
-
-        return await this.#request('events', payload)
-    }
-
-    async identify({ traits: data, ...props }: IdentifyProps) {
-        return await this.#request('identify', { ...props, data })
-    }
-
-    async alias(props: AliasProps) {
-        const payload: InternalPayload = {
-            anonymousId: props.anonymousId,
-            externalId: props.externalId,
-        }
-
-        return await this.#request('identify', payload)
-    }
-
-    async #request(path: string, data: InternalPayload | InternalPayload[]) {
-        try {
-            const response = await fetch(`${this.#urlEndpoint}/client/${path}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.#apiKey}`,
-                },
-                body: JSON.stringify(mapKeys(data)),
-            })
-
-            if (!response.ok) {
-                const errorBody = await response.text().catch(() => 'Unknown error body')
-                throw new Error(`Request failed with status ${response.status}: ${errorBody}`)
-            }
-
-            return await response.text()
-        } catch (error) {
-            const message = error instanceof Error ? error.message : 'Unknown error'
-            throw new Error(`Lunogram: Network request failed: ${message}`)
-        }
+    protected get httpHandler(): HttpHandler {
+        return this.#http
     }
 }

@@ -1,1 +1,1 @@
-export const DefaultEndpoint = 'https://uplink.lab.lunogram.io/api'
+export const DefaultEndpoint = 'https://console.lab.lunogram.io/api'

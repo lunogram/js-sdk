@@ -1,43 +1,36 @@
 import { BrowserClient } from './platform/browser'
-import { ClientProps, TrackProps, EventProps, IdentifyProps, AliasProps } from './types'
+import { ClientProps } from './types'
+import { ClientNamespace } from './core/factory'
 
 export * from './core/client'
-export * from './platform/browser'
+export * from './core/http'
+export * from './core/errors'
+export * from './core/resources'
 export * from './types'
 export * from './utils'
 
 export class Lunogram {
-    static instance?: BrowserClient = undefined
+    private static client?: BrowserClient
 
     static initialize(props: ClientProps) {
-        Lunogram.instance = new BrowserClient(props)
+        Lunogram.client = new BrowserClient(props)
     }
 
-    static get #client(): BrowserClient {
-        if (!Lunogram.instance) {
+    static get user(): ClientNamespace['user'] {
+        if (!Lunogram.client) {
             throw new Error('Lunogram: SDK must be initialized with .initialize(props) before use.')
         }
-        return Lunogram.instance
+        return Lunogram.client.user
     }
 
-    static async track(props: TrackProps) {
-        return await Lunogram.#client.track(props)
-    }
-
-    static async events(props: EventProps[]) {
-        return await Lunogram.#client.events(props)
-    }
-
-    static async identify(props: IdentifyProps) {
-        return await Lunogram.#client.identify(props)
-    }
-
-    static async alias(props: AliasProps) {
-        return await Lunogram.#client.alias(props)
+    static get organization(): ClientNamespace['organization'] {
+        if (!Lunogram.client) {
+            throw new Error('Lunogram: SDK must be initialized with .initialize(props) before use.')
+        }
+        return Lunogram.client.organization
     }
 }
 
-// If running in a browser, expose Lunogram from the window object
 declare global {
     interface Window { Lunogram: typeof Lunogram; }
 }
