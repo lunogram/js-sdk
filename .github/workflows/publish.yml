@@ -13,9 +13,6 @@ jobs:
   release-npm:
     name: "Release NPM"
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
