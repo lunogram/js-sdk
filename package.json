@@ -2,6 +2,10 @@
   "name": "@lunogram/js-sdk",
   "version": "0.0.0",
   "description": "Lunogram Javascript SDK for collecting events",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lunogram/js-sdk"
+  },
   "scripts": {
     "build": "rimraf lib/ && pnpm run build:esm && pnpm run build:cjs",
     "build:esm": "tsc --project ./tsconfig.module.json",
