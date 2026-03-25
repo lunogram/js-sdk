@@ -1,9 +1,17 @@
 import { DeleteOrganizationRequest, OrganizationEvent, OrganizationRequest, OrganizationUserRequest, RemoveOrganizationUserRequest } from "../../../types"
 import { BaseResource } from "../base"
+import { HttpHandler } from "../../http"
+import { OrganizationScheduledResource } from "./scheduled"
 
 
 export class OrganizationResource extends BaseResource {
     readonly endpoint = 'organizations'
+    readonly schedule: OrganizationScheduledResource
+
+    constructor(http: HttpHandler) {
+        super(http)
+        this.schedule = new OrganizationScheduledResource(http)
+    }
 
     /**
      * Creates or updates an organization.

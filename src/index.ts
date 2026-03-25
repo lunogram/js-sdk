@@ -36,20 +36,6 @@ export class Lunogram {
     get organization(): ClientNamespace['organization'] {
         return this.client.organization
     }
-
-    /**
-     * Access user scheduled task methods.
-     */
-    get userScheduled(): ClientNamespace['userScheduled'] {
-        return this.client.userScheduled
-    }
-
-    /**
-     * Access organization scheduled task methods.
-     */
-    get organizationScheduled(): ClientNamespace['organizationScheduled'] {
-        return this.client.organizationScheduled
-    }
 }
 
 declare global {

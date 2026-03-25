@@ -2,8 +2,6 @@ import { Client } from '../core/client'
 import { ClientProps } from '../types'
 import { generateUuid } from '../utils'
 import { UserResource } from '../core/resources/users/user'
-import { UserScheduledResource } from '../core/resources/users/scheduled'
-import { OrganizationScheduledResource } from '../core/resources/organizations/scheduled'
 import { HttpHandler } from '../core/http'
 import {
     UpsertUserRequest,
@@ -49,14 +47,9 @@ class BrowserUserResource extends UserResource {
 
 export class BrowserClient extends Client {
     readonly user: BrowserUserResource
-    readonly userScheduled: UserScheduledResource
-    readonly organizationScheduled: OrganizationScheduledResource
 
     constructor(props: ClientProps) {
         super(props)
-        const http = super.httpHandler
-        this.user = new BrowserUserResource(http)
-        this.userScheduled = new UserScheduledResource(http)
-        this.organizationScheduled = new OrganizationScheduledResource(http)
+        this.user = new BrowserUserResource(super.httpHandler)
     }
 }
