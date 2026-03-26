@@ -1,16 +1,19 @@
-import { DeleteOrganizationRequest, OrganizationEvent, OrganizationRequest, OrganizationUserRequest, RemoveOrganizationUserRequest } from "../../../types"
+import { DeleteOrganizationRequest, OrganizationRequest, OrganizationUserRequest, RemoveOrganizationUserRequest } from "../../../types"
 import { BaseResource } from "../base"
 import { HttpHandler } from "../../http"
 import { OrganizationScheduledResource } from "./scheduled"
+import { OrganizationEventsResource } from "./events"
 
 
 export class OrganizationResource extends BaseResource {
     readonly endpoint = 'organizations'
     readonly schedule: OrganizationScheduledResource
+    readonly events: OrganizationEventsResource
 
     constructor(http: HttpHandler) {
         super(http)
         this.schedule = new OrganizationScheduledResource(http)
+        this.events = new OrganizationEventsResource(http)
     }
 
     /**
@@ -47,14 +50,5 @@ export class OrganizationResource extends BaseResource {
      */
     async removeUser(data: RemoveOrganizationUserRequest) {
         return this.remove(data, 'organizations/users')
-    }
-
-    /**
-     * Posts events for an organization.
-     * @param data - Array of organization events to post
-     * @returns Promise resolving to the API response
-     */
-    async postEvents(data: OrganizationEvent[]) {
-        return this.post(data, 'organizations/events')
     }
 }

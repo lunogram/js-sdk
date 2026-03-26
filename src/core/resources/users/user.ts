@@ -3,17 +3,19 @@ import { HttpHandler } from '../../http'
 import {
     UpsertUserRequest,
     DeleteUserRequest,
-    UserEvent,
 } from '../../../types'
 import { UserScheduledResource } from './scheduled'
+import { UserEventsResource } from './events'
 
 export class UserResource extends BaseResource {
     readonly endpoint = 'users'
     readonly schedule: UserScheduledResource
+    readonly events: UserEventsResource
 
     constructor(http: HttpHandler) {
         super(http)
         this.schedule = new UserScheduledResource(http)
+        this.events = new UserEventsResource(http)
     }
 
     /**
@@ -32,14 +34,5 @@ export class UserResource extends BaseResource {
      */
     async delete(data: DeleteUserRequest) {
         return this.remove(data)
-    }
-
-    /**
-     * Posts events for a user.
-     * @param data - Array of user events to post
-     * @returns Promise resolving to the API response
-     */
-    async postEvents(data: UserEvent[]) {
-        return this.post(data, 'users/events')
     }
 }
