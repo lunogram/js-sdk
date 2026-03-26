@@ -1,7 +1,7 @@
 import { Client } from '../core/client'
 import { ClientProps } from '../types'
 import { generateUuid } from '../utils'
-import { UserResource } from '../core/resources/user'
+import { UserResource } from '../core/resources/users/user'
 import { HttpHandler } from '../core/http'
 import {
     UpsertUserRequest,

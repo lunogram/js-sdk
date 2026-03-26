@@ -1,3 +1,3 @@
 export { BaseResource } from './base'
-export { UserResource } from './user'
-export { OrganizationResource } from './organization'
+export { UserResource, UserScheduledResource } from './users'
+export { OrganizationResource, OrganizationScheduledResource } from './organizations'

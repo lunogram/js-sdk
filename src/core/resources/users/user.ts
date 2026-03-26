@@ -1,12 +1,20 @@
-import { BaseResource } from './base'
+import { BaseResource } from './../base'
+import { HttpHandler } from '../../http'
 import {
     UpsertUserRequest,
     DeleteUserRequest,
     UserEvent,
-} from '../../types'
+} from '../../../types'
+import { UserScheduledResource } from './scheduled'
 
 export class UserResource extends BaseResource {
     readonly endpoint = 'users'
+    readonly schedule: UserScheduledResource
+
+    constructor(http: HttpHandler) {
+        super(http)
+        this.schedule = new UserScheduledResource(http)
+    }
 
     /**
      * Creates or updates a user.
