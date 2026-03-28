@@ -6,6 +6,7 @@ import {
     NetworkError,
     RequestError,
     UnauthorizedError,
+    ForbiddenError,
     NotFoundError,
     ValidationError,
 } from './errors'
@@ -15,6 +16,7 @@ type HttpMethod = 'GET' | 'POST' | 'DELETE'
 const statusErrorFactories: Partial<Record<number, () => LunogramError>> = {
     400: () => new ValidationError('Invalid request'),
     401: () => new UnauthorizedError(),
+    403: () => new ForbiddenError(),
     404: () => new NotFoundError(),
 }
 
@@ -65,17 +67,18 @@ export class HttpHandler {
 
     async #handleResponse<T>(response: Response): Promise<T> {
         if (!response.ok) {
-            throw this.#mapError(response)
+            throw await this.#mapError(response)
         }
 
-        if (response.status === 204) {
+        const contentType = response.headers.get('content-type')
+        if (!contentType || !contentType.includes('application/json')) {
             return undefined as T
         }
 
         return response.json() as Promise<T>
     }
 
-    #mapError(response: Response): LunogramError {
+    async #mapError(response: Response): Promise<LunogramError> {
         const status = response.status
 
         const createError = statusErrorFactories[status]
@@ -83,6 +86,16 @@ export class HttpHandler {
             return createError()
         }
 
-        return new RequestError(status, `Request failed with status ${status}`)
+        let detail = `Request failed with status ${status}`
+        try {
+            const body = await response.json()
+            if (body?.detail) {
+                detail = body.detail
+            }
+        } catch {
+            // no parseable body
+        }
+
+        return new RequestError(status, detail)
     }
 }

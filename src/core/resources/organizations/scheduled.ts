@@ -1,29 +1,29 @@
 import { BaseResource } from '../base'
 import {
-    CreateOrganizationScheduledRequest,
+    UpsertOrganizationScheduledRequest,
     DeleteOrganizationScheduledRequest,
-    OrganizationScheduledResponse,
+    ScheduledAcceptedResponse,
 } from '../../../types'
 
 /**
- * Resource for managing scheduled organization tasks.
+ * Resource for managing scheduled organization resources.
  */
 export class OrganizationScheduledResource extends BaseResource {
     readonly endpoint = 'organizations/scheduled'
 
     /**
-     * Creates a scheduled task for an organization.
-     * @param data - Scheduled task data including name, organizationExternalId, scheduledAt, interval, etc.
-     * @returns Promise resolving to the created scheduled task
+     * Creates or updates a scheduled resource for an organization.
+     * @param data - Scheduled resource data including name, identifier, scheduledAt, interval, etc.
+     * @returns Promise resolving to the accepted scheduled resource
      */
-    async create(data: CreateOrganizationScheduledRequest): Promise<OrganizationScheduledResponse> {
+    async upsert(data: UpsertOrganizationScheduledRequest): Promise<ScheduledAcceptedResponse> {
         return this.post(data)
     }
 
     /**
-     * Deletes a scheduled task by name and organization external ID.
-     * @param data - Delete request with name and organizationExternalId
-     * @returns Promise resolving when scheduled task is deleted
+     * Deletes all scheduled instances for an organization with a given resource name.
+     * @param data - Delete request with name and identifier
+     * @returns Promise resolving when scheduled resource is deleted
      */
     async delete(data: DeleteOrganizationScheduledRequest): Promise<void> {
         return this.remove(data)

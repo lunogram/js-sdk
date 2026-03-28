@@ -1,9 +1,14 @@
-import { DeleteOrganizationRequest, OrganizationRequest, OrganizationUserRequest, RemoveOrganizationUserRequest } from "../../../types"
+import {
+    DeleteOrganizationRequest,
+    OrganizationRequest,
+    OrganizationResponse,
+    OrganizationUserRequest,
+    RemoveOrganizationUserRequest,
+} from "../../../types"
 import { BaseResource } from "../base"
 import { HttpHandler } from "../../http"
 import { OrganizationScheduledResource } from "./scheduled"
 import { OrganizationEventsResource } from "./events"
-
 
 export class OrganizationResource extends BaseResource {
     readonly endpoint = 'organizations'
@@ -18,37 +23,37 @@ export class OrganizationResource extends BaseResource {
 
     /**
      * Creates or updates an organization.
-     * @param data - Organization data including externalId, name, data, etc.
+     * @param data - Organization data including identifier, name, data, etc.
      * @returns Promise resolving to the created/updated organization
      */
-    async upsert(data: OrganizationRequest) {
+    async upsert(data: OrganizationRequest): Promise<OrganizationResponse> {
         return this.post(data)
     }
 
     /**
-     * Deletes an organization by externalId.
-     * @param data - Delete request with externalId
+     * Deletes an organization by identifier.
+     * @param data - Delete request with identifier
      * @returns Promise resolving when organization is deleted
      */
-    async delete(data: DeleteOrganizationRequest) {
+    async delete(data: DeleteOrganizationRequest): Promise<void> {
         return this.remove(data)
     }
 
     /**
      * Adds a user to an organization.
-     * @param data - User assignment data with organizationExternalId and userExternalId
+     * @param data - User assignment data with organization and user identifiers
      * @returns Promise resolving when user is added
      */
-    async addUser(data: OrganizationUserRequest) {
-        return this.post({ ...data, action: 'add' }, 'organizations/users')
+    async addUser(data: OrganizationUserRequest): Promise<void> {
+        return this.post(data, 'organizations/users')
     }
 
     /**
      * Removes a user from an organization.
-     * @param data - User removal data with organizationExternalId and userExternalId
+     * @param data - User removal data with organization and user identifiers
      * @returns Promise resolving when user is removed
      */
-    async removeUser(data: RemoveOrganizationUserRequest) {
+    async removeUser(data: RemoveOrganizationUserRequest): Promise<void> {
         return this.remove(data, 'organizations/users')
     }
 }

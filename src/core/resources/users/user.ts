@@ -3,6 +3,7 @@ import { HttpHandler } from '../../http'
 import {
     UpsertUserRequest,
     DeleteUserRequest,
+    UserResponse,
 } from '../../../types'
 import { UserScheduledResource } from './scheduled'
 import { UserEventsResource } from './events'
@@ -20,19 +21,19 @@ export class UserResource extends BaseResource {
 
     /**
      * Creates or updates a user.
-     * @param data - User data including email, externalId, phone, etc.
+     * @param data - User data including identifier, email, phone, etc.
      * @returns Promise resolving to the created/updated user
      */
-    async upsert(data: UpsertUserRequest) {
+    async upsert(data: UpsertUserRequest): Promise<UserResponse> {
         return this.post(data)
     }
 
     /**
-     * Deletes a user by externalId or anonymousId.
-     * @param data - Delete request with externalId or anonymousId
+     * Deletes a user by identifier.
+     * @param data - Delete request with identifier array
      * @returns Promise resolving when user is deleted
      */
-    async delete(data: DeleteUserRequest) {
+    async delete(data: DeleteUserRequest): Promise<void> {
         return this.remove(data)
     }
 }

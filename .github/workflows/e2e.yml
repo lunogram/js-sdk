@@ -1,0 +1,27 @@
+name: E2E Tests
+
+on:
+  push:
+
+jobs:
+  e2e:
+    name: "E2E Tests"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ vars.PNPM_VERSION }}
+      - name: Set-up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ vars.NODEJS_VERSION }}
+          cache: 'pnpm'
+      - run: pnpm install
+      - name: Run E2E tests
+        run: pnpm test:e2e
+        env:
+          LUNOGRAM_API_KEY: ${{ secrets.LUNOGRAM_API_KEY }}
+          LUNOGRAM_API_URL: ${{ secrets.LUNOGRAM_API_URL }}

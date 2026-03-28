@@ -1,45 +1,42 @@
 import { JSONValue } from './common'
+import { UserIdentifier, OrganizationIdentifier } from './request'
 
-export interface CreateUserScheduledRequest {
+/** Request to create or update a scheduled resource for a user */
+export interface UpsertUserScheduledRequest {
     name: string
-    externalId?: string
-    anonymousId?: string
-    scheduledAt: string
-    startAt?: string
-    interval: string
-    data?: Record<string, JSONValue>
+    identifier?: UserIdentifier
+    scheduledAt?: string | null
+    startAt?: string | null
+    interval?: string | null
+    data?: Record<string, JSONValue> | null
 }
 
+/** Request to delete a user scheduled resource */
 export interface DeleteUserScheduledRequest {
     name: string
-    externalId?: string
-    anonymousId?: string
+    identifier?: UserIdentifier
 }
 
-export interface UserScheduledResponse {
+/** Response when a scheduled resource is accepted */
+export interface ScheduledAcceptedResponse {
     id: string
     name: string
     scheduledAt: string
-    data: Record<string, JSONValue> | null
+    data?: Record<string, JSONValue> | null
 }
 
-export interface CreateOrganizationScheduledRequest {
+/** Request to create or update a scheduled resource for an organization */
+export interface UpsertOrganizationScheduledRequest {
     name: string
-    organizationExternalId: string
-    scheduledAt: string
-    startAt?: string
-    interval: string
-    data?: Record<string, JSONValue>
+    identifier: OrganizationIdentifier
+    scheduledAt?: string | null
+    startAt?: string | null
+    interval?: string | null
+    data?: Record<string, JSONValue> | null
 }
 
+/** Request to delete an organization scheduled resource */
 export interface DeleteOrganizationScheduledRequest {
     name: string
-    organizationExternalId: string
-}
-
-export interface OrganizationScheduledResponse {
-    id: string
-    name: string
-    scheduledAt: string
-    data: Record<string, JSONValue> | null
+    identifier: OrganizationIdentifier
 }

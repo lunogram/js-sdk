@@ -3,6 +3,7 @@ export {
     NetworkError,
     RequestError,
     UnauthorizedError,
+    ForbiddenError,
     NotFoundError,
     ValidationError,
 } from './request'

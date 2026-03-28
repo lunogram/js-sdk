@@ -1,29 +1,29 @@
 import { BaseResource } from '../base'
 import {
-    CreateUserScheduledRequest,
+    UpsertUserScheduledRequest,
     DeleteUserScheduledRequest,
-    UserScheduledResponse,
+    ScheduledAcceptedResponse,
 } from '../../../types'
 
 /**
- * Resource for managing scheduled user tasks.
+ * Resource for managing scheduled user resources.
  */
 export class UserScheduledResource extends BaseResource {
     readonly endpoint = 'users/scheduled'
 
     /**
-     * Creates a scheduled task for a user.
-     * @param data - Scheduled task data including name, externalId, scheduledAt, interval, etc.
-     * @returns Promise resolving to the created scheduled task
+     * Creates or updates a scheduled resource for a user.
+     * @param data - Scheduled resource data including name, identifier, scheduledAt, interval, etc.
+     * @returns Promise resolving to the accepted scheduled resource
      */
-    async create(data: CreateUserScheduledRequest): Promise<UserScheduledResponse> {
+    async upsert(data: UpsertUserScheduledRequest): Promise<ScheduledAcceptedResponse> {
         return this.post(data)
     }
 
     /**
-     * Deletes a scheduled task by name and user identifiers.
-     * @param data - Delete request with name and externalId or anonymousId
-     * @returns Promise resolving when scheduled task is deleted
+     * Deletes all scheduled instances for a user with a given resource name.
+     * @param data - Delete request with name and identifier
+     * @returns Promise resolving when scheduled resource is deleted
      */
     async delete(data: DeleteUserScheduledRequest): Promise<void> {
         return this.remove(data)

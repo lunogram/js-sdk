@@ -29,6 +29,12 @@ export class UnauthorizedError extends RequestError {
     }
 }
 
+export class ForbiddenError extends RequestError {
+    constructor(message = 'Forbidden') {
+        super(403, message, undefined, 'FORBIDDEN')
+    }
+}
+
 export class NotFoundError extends RequestError {
     constructor(message = 'Resource not found') {
         super(404, message, undefined, 'NOT_FOUND')
