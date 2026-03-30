@@ -60,7 +60,14 @@ export interface UserResponse {
 /** Event data for user events */
 export interface UserEvent {
     name: string
+    /** User identifier array. Mutually exclusive with `match`. */
     identifier?: UserIdentifier
+    /**
+     * JSONB containment filter to match users by their data attributes.
+     * Mutually exclusive with `identifier`. When set, the event is delivered
+     * to every user whose data column contains the given key/value pairs.
+     */
+    match?: Record<string, JSONValue> | null
     data: Record<string, JSONValue>
 }
 
@@ -111,7 +118,14 @@ export interface RemoveOrganizationUserRequest {
 
 /** Event data for organization events */
 export interface OrganizationEvent {
-    identifier: OrganizationIdentifier
+    /** Organization identifier array. Mutually exclusive with `match`. */
+    identifier?: OrganizationIdentifier
+    /**
+     * JSONB containment filter to match organizations by their data attributes.
+     * Mutually exclusive with `identifier`. When set, the event is delivered
+     * to every organization whose data column contains the given key/value pairs.
+     */
+    match?: Record<string, JSONValue> | null
     name: string
     data?: Record<string, JSONValue> | null
 }

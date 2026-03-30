@@ -28,7 +28,8 @@ class BrowserUserEventsResource extends UserEventsResource {
         const identifier = this.#getIdentifier()
         const injected = data.map((event) => ({
             ...event,
-            identifier: event.identifier ?? identifier,
+            // Do not inject identifier when `match` is used (they are mutually exclusive)
+            identifier: event.match ? event.identifier : (event.identifier ?? identifier),
         }))
         return super.post(injected) as Promise<T>
     }
