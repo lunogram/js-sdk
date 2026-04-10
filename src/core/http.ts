@@ -24,6 +24,10 @@ export class HttpHandler {
     readonly #apiKey: string
     readonly #baseUrl: string
 
+    #emptyResponse<T>(): T {
+        return undefined!
+    }
+
     constructor(props: ClientProps) {
         this.#apiKey = props.apiKey
         this.#baseUrl = props.urlEndpoint ?? DefaultEndpoint
@@ -66,16 +70,31 @@ export class HttpHandler {
     }
 
     async #handleResponse<T>(response: Response): Promise<T> {
+
         if (!response.ok) {
             throw await this.#mapError(response)
         }
 
-        const contentType = response.headers.get('content-type')
-        if (!contentType || !contentType.includes('application/json')) {
-            return undefined as T
+        if (response.status === 204 || response.status === 205) {
+            return this.#emptyResponse<T>()
         }
 
-        return response.json() as Promise<T>
+        const contentLength = response.headers.get('content-length')
+        if (contentLength === '0') {
+            return this.#emptyResponse<T>()
+        }
+
+        const contentType = response.headers.get('content-type')
+        if (!contentType || !contentType.includes('application/json')) {
+            return this.#emptyResponse<T>()
+        }
+
+        const text = await response.text()
+        if (!text.trim()) {
+            return this.#emptyResponse<T>()
+        }
+
+        return JSON.parse(text)
     }
 
     async #mapError(response: Response): Promise<LunogramError> {
