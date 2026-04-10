@@ -24,28 +24,24 @@ export class HttpHandler {
     readonly #apiKey: string
     readonly #baseUrl: string
 
-    #emptyResponse<T>(): T {
-        return undefined!
-    }
-
     constructor(props: ClientProps) {
         this.#apiKey = props.apiKey
         this.#baseUrl = props.urlEndpoint ?? DefaultEndpoint
     }
 
-    async get<T = unknown>(path: string, data?: unknown): Promise<T> {
+    async get<T = unknown>(path: string, data?: unknown): Promise<T | undefined> {
         return this.#request<T>('GET', path, data)
     }
 
-    async post<T = unknown>(path: string, data?: unknown): Promise<T> {
+    async post<T = unknown>(path: string, data?: unknown): Promise<T | undefined> {
         return this.#request<T>('POST', path, data)
     }
 
-    async delete<T = unknown>(path: string, data?: unknown): Promise<T> {
+    async delete<T = unknown>(path: string, data?: unknown): Promise<T | undefined> {
         return this.#request<T>('DELETE', path, data)
     }
 
-    async #request<T>(method: HttpMethod, path: string, data?: unknown): Promise<T> {
+    async #request<T>(method: HttpMethod, path: string, data?: unknown): Promise<T | undefined> {
         const url = `${this.#baseUrl}/client/${path}`
 
         try {
@@ -69,20 +65,19 @@ export class HttpHandler {
         }
     }
 
-    async #handleResponse<T>(response: Response): Promise<T> {
-
+    async #handleResponse<T>(response: Response): Promise<T | undefined> {
         if (!response.ok) {
             throw await this.#mapError(response)
         }
 
         const contentLength = response.headers.get('content-length')
         if (contentLength === '0') {
-            return this.#emptyResponse<T>()
+            return undefined
         }
 
         const contentType = response.headers.get('content-type')
         if (!contentType || !contentType.includes('application/json')) {
-            return this.#emptyResponse<T>()
+            return undefined
         }
 
         return response.json()

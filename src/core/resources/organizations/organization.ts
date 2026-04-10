@@ -26,7 +26,7 @@ export class OrganizationResource extends BaseResource {
      * @param data - Organization data including identifier, name, data, etc.
      * @returns Promise resolving to the created/updated organization
      */
-    async upsert(data: OrganizationRequest): Promise<OrganizationResponse> {
+    async upsert(data: OrganizationRequest): Promise<OrganizationResponse | undefined> {
         return this.post<OrganizationResponse>(data)
     }
 

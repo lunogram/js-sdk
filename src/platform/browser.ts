@@ -24,7 +24,7 @@ class BrowserUserEventsResource extends UserEventsResource {
         this.#getIdentifier = getIdentifier
     }
 
-    async post<T = unknown>(data: UserEvent[]): Promise<T> {
+    async post<T = unknown>(data: UserEvent[]): Promise<T | undefined> {
         const identifier = this.#getIdentifier()
         const injected = data.map((event) => ({
             ...event,
@@ -43,7 +43,7 @@ class BrowserUserScheduledResource extends UserScheduledResource {
         this.#getIdentifier = getIdentifier
     }
 
-    async upsert(data: UpsertUserScheduledRequest): Promise<ScheduledAcceptedResponse> {
+    async upsert(data: UpsertUserScheduledRequest): Promise<ScheduledAcceptedResponse | undefined> {
         return super.upsert({
             ...data,
             identifier: data.identifier ?? this.#getIdentifier(),
@@ -113,7 +113,7 @@ class BrowserUserResource extends UserResource {
         return identifier
     }
 
-    async upsert(data: UpsertUserRequest): Promise<UserResponse> {
+    async upsert(data: UpsertUserRequest): Promise<UserResponse | undefined> {
         const identifier = this.#buildIdentifier(data.identifier)
         return super.upsert({ ...data, identifier })
     }

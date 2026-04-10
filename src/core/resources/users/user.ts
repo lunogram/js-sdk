@@ -24,7 +24,7 @@ export class UserResource extends BaseResource {
      * @param data - User data including identifier, email, phone, etc.
      * @returns Promise resolving to the created/updated user
      */
-    async upsert(data: UpsertUserRequest): Promise<UserResponse> {
+    async upsert(data: UpsertUserRequest): Promise<UserResponse | undefined> {
         return this.post<UserResponse>(data)
     }
 
