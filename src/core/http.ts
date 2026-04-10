@@ -75,10 +75,6 @@ export class HttpHandler {
             throw await this.#mapError(response)
         }
 
-        if (response.status === 204 || response.status === 205) {
-            return this.#emptyResponse<T>()
-        }
-
         const contentLength = response.headers.get('content-length')
         if (contentLength === '0') {
             return this.#emptyResponse<T>()
@@ -89,12 +85,7 @@ export class HttpHandler {
             return this.#emptyResponse<T>()
         }
 
-        const text = await response.text()
-        if (!text.trim()) {
-            return this.#emptyResponse<T>()
-        }
-
-        return JSON.parse(text)
+        return response.json()
     }
 
     async #mapError(response: Response): Promise<LunogramError> {
