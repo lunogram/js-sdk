@@ -26,8 +26,8 @@ export class OrganizationResource extends BaseResource {
      * @param data - Organization data including identifier, name, data, etc.
      * @returns Promise resolving to the created/updated organization
      */
-    async upsert(data: OrganizationRequest): Promise<OrganizationResponse> {
-        return this.post(data)
+    async upsert(data: OrganizationRequest): Promise<OrganizationResponse | undefined> {
+        return this.post<OrganizationResponse>(data)
     }
 
     /**
@@ -36,7 +36,7 @@ export class OrganizationResource extends BaseResource {
      * @returns Promise resolving when organization is deleted
      */
     async delete(data: DeleteOrganizationRequest): Promise<void> {
-        return this.remove(data)
+        return this.remove<void>(data)
     }
 
     /**
@@ -45,7 +45,7 @@ export class OrganizationResource extends BaseResource {
      * @returns Promise resolving when user is added
      */
     async addUser(data: OrganizationUserRequest): Promise<void> {
-        return this.post(data, 'organizations/users')
+        return this.post<void>(data, 'organizations/users')
     }
 
     /**
@@ -54,6 +54,6 @@ export class OrganizationResource extends BaseResource {
      * @returns Promise resolving when user is removed
      */
     async removeUser(data: RemoveOrganizationUserRequest): Promise<void> {
-        return this.remove(data, 'organizations/users')
+        return this.remove<void>(data, 'organizations/users')
     }
 }

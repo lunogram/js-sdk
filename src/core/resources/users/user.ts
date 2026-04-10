@@ -24,8 +24,8 @@ export class UserResource extends BaseResource {
      * @param data - User data including identifier, email, phone, etc.
      * @returns Promise resolving to the created/updated user
      */
-    async upsert(data: UpsertUserRequest): Promise<UserResponse> {
-        return this.post(data)
+    async upsert(data: UpsertUserRequest): Promise<UserResponse | undefined> {
+        return this.post<UserResponse>(data)
     }
 
     /**
@@ -34,6 +34,6 @@ export class UserResource extends BaseResource {
      * @returns Promise resolving when user is deleted
      */
     async delete(data: DeleteUserRequest): Promise<void> {
-        return this.remove(data)
+        return this.remove<void>(data)
     }
 }

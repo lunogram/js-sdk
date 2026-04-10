@@ -8,7 +8,7 @@ export class OrganizationEventsResource extends BaseResource {
      * Posts organization events for asynchronous processing.
      * @param data - Array of organization events
      */
-    async post<T = unknown>(data: OrganizationEvent[]): Promise<T> {
-        return super.post(data)
+    async post<T = unknown>(data: OrganizationEvent[]): Promise<T | undefined> {
+        return super.post<T>(data)
     }
 }

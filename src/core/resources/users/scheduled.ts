@@ -16,8 +16,8 @@ export class UserScheduledResource extends BaseResource {
      * @param data - Scheduled resource data including name, identifier, scheduledAt, interval, etc.
      * @returns Promise resolving to the accepted scheduled resource
      */
-    async upsert(data: UpsertUserScheduledRequest): Promise<ScheduledAcceptedResponse> {
-        return this.post(data)
+    async upsert(data: UpsertUserScheduledRequest): Promise<ScheduledAcceptedResponse | undefined> {
+        return this.post<ScheduledAcceptedResponse>(data)
     }
 
     /**
@@ -26,6 +26,6 @@ export class UserScheduledResource extends BaseResource {
      * @returns Promise resolving when scheduled resource is deleted
      */
     async delete(data: DeleteUserScheduledRequest): Promise<void> {
-        return this.remove(data)
+        return this.remove<void>(data)
     }
 }
