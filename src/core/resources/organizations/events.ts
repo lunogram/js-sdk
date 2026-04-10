@@ -9,6 +9,6 @@ export class OrganizationEventsResource extends BaseResource {
      * @param data - Array of organization events
      */
     async post<T = unknown>(data: OrganizationEvent[]): Promise<T> {
-        return super.post(data)
+        return super.post<T>(data)
     }
 }

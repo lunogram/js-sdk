@@ -9,6 +9,6 @@ export class UserEventsResource extends BaseResource {
      * @param data - Array of user events
      */
     async post<T = unknown>(data: UserEvent[]): Promise<T> {
-        return super.post(data)
+        return super.post<T>(data)
     }
 }

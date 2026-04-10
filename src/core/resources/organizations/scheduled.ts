@@ -17,7 +17,7 @@ export class OrganizationScheduledResource extends BaseResource {
      * @returns Promise resolving to the accepted scheduled resource
      */
     async upsert(data: UpsertOrganizationScheduledRequest): Promise<ScheduledAcceptedResponse> {
-        return this.post(data)
+        return this.post<ScheduledAcceptedResponse>(data)
     }
 
     /**
@@ -26,6 +26,6 @@ export class OrganizationScheduledResource extends BaseResource {
      * @returns Promise resolving when scheduled resource is deleted
      */
     async delete(data: DeleteOrganizationScheduledRequest): Promise<void> {
-        return this.remove(data)
+        return this.remove<void>(data)
     }
 }

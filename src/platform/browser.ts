@@ -31,7 +31,7 @@ class BrowserUserEventsResource extends UserEventsResource {
             // Do not inject identifier when `match` is used (they are mutually exclusive)
             identifier: event.match ? event.identifier : (event.identifier ?? identifier),
         }))
-        return super.post(injected) as Promise<T>
+        return super.post<T>(injected)
     }
 }
 
