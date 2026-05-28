@@ -7,16 +7,19 @@ import {
 } from '../../../types'
 import { UserScheduledResource } from './scheduled'
 import { UserEventsResource } from './events'
+import { UserInboxResource } from './inbox'
 
 export class UserResource extends BaseResource {
     readonly endpoint = 'users'
     readonly schedule: UserScheduledResource
     readonly events: UserEventsResource
+    readonly inbox: UserInboxResource
 
     constructor(http: HttpHandler) {
         super(http)
         this.schedule = new UserScheduledResource(http)
         this.events = new UserEventsResource(http)
+        this.inbox = new UserInboxResource(http)
     }
 
     /**

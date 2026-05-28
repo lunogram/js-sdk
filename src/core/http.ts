@@ -42,7 +42,21 @@ export class HttpHandler {
     }
 
     async #request<T>(method: HttpMethod, path: string, data?: unknown): Promise<T | undefined> {
-        const url = `${this.#baseUrl}/client/${path}`
+        let url = `${this.#baseUrl}/client/${path}`
+        let body: string | undefined
+
+        if (method === 'GET' && data) {
+            const mapped = mapKeys(data) as Record<string, unknown>
+            const params = new URLSearchParams()
+            for (const [key, value] of Object.entries(mapped)) {
+                if (value !== null && value !== undefined) {
+                    params.set(key, String(value))
+                }
+            }
+            url = `${url}?${params.toString()}`
+        } else if (data) {
+            body = JSON.stringify(mapKeys(data))
+        }
 
         try {
             const response = await fetch(url, {
@@ -51,7 +65,7 @@ export class HttpHandler {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${this.#apiKey}`,
                 },
-                body: data ? JSON.stringify(mapKeys(data)) : undefined,
+                body,
             })
 
             return this.#handleResponse<T>(response)

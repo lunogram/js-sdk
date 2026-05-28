@@ -9,16 +9,19 @@ import { BaseResource } from "../base"
 import { HttpHandler } from "../../http"
 import { OrganizationScheduledResource } from "./scheduled"
 import { OrganizationEventsResource } from "./events"
+import { OrganizationInboxResource } from "./inbox"
 
 export class OrganizationResource extends BaseResource {
     readonly endpoint = 'organizations'
     readonly schedule: OrganizationScheduledResource
     readonly events: OrganizationEventsResource
+    readonly inbox: OrganizationInboxResource
 
     constructor(http: HttpHandler) {
         super(http)
         this.schedule = new OrganizationScheduledResource(http)
         this.events = new OrganizationEventsResource(http)
+        this.inbox = new OrganizationInboxResource(http)
     }
 
     /**

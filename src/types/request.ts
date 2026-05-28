@@ -116,6 +116,68 @@ export interface RemoveOrganizationUserRequest {
     }
 }
 
+// Inbox types
+
+export type InboxStatus = 'unread' | 'opened' | 'archived'
+
+/** Request to create inbox messages */
+export interface PostInboxMessagesRequest {
+    source: string
+    externalId: string
+    messages: Record<string, JSONValue>[]
+}
+
+/** Request to mark inbox messages as opened or archived */
+export interface InboxMessageEvents {
+    source: string
+    externalId: string
+    messageIds: string[]
+}
+
+/** Query params for fetching inbox messages */
+export interface GetInboxParams {
+    source: string
+    externalId: string
+    channel: string
+    status?: InboxStatus
+    tags?: string
+    messageSource?: string
+    priority?: number
+    limit?: number
+    offset?: number
+}
+
+/** Query params for counting inbox messages */
+export interface GetInboxCountParams {
+    source: string
+    externalId: string
+    channel: string
+}
+
+/** A single inbox message as returned by the API */
+export interface InboxMessage {
+    id: string
+    data: Record<string, JSONValue>
+    status: InboxStatus
+    channel: string
+    priority: number
+    tags: string[]
+    createdAt: string
+    updatedAt: string
+}
+
+/** Paginated list of inbox messages */
+export interface InboxMessageList {
+    data: InboxMessage[]
+    total: number
+}
+
+/** Inbox message counts */
+export interface InboxCount {
+    unread: number
+    total: number
+}
+
 /** Event data for organization events */
 export interface OrganizationEvent {
     /** Organization identifier array. Mutually exclusive with `match`. */
