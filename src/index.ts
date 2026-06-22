@@ -17,10 +17,12 @@ export class Lunogram {
     /**
      * Creates a new Lunogram instance.
      * @param apiKey - Your Lunogram API key
+     * @param projectId - The UUID of your Lunogram project (required). All
+     *                    Client API requests are scoped to this project.
      * @param urlEndpoint - Optional custom API endpoint URL
      */
-    constructor(apiKey: string, urlEndpoint?: string) {
-        this.client = new BrowserClient({ apiKey, urlEndpoint })
+    constructor(apiKey: string, projectId: string, urlEndpoint?: string) {
+        this.client = new BrowserClient({ apiKey, projectId, urlEndpoint })
     }
 
     /**

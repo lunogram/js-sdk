@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest'
 import { Client } from '../src'
 
 const apiKey = process.env.LUNOGRAM_API_KEY
+const projectId = process.env.LUNOGRAM_PROJECT_ID
 const urlEndpoint = process.env.LUNOGRAM_API_URL
 
 const userId = `test-user-${Date.now()}`
@@ -13,7 +14,10 @@ beforeAll(() => {
     if (!apiKey) {
         throw new Error('LUNOGRAM_API_KEY environment variable is required')
     }
-    client = new Client({ apiKey, urlEndpoint })
+    if (!projectId) {
+        throw new Error('LUNOGRAM_PROJECT_ID environment variable is required')
+    }
+    client = new Client({ apiKey, projectId, urlEndpoint })
 })
 
 describe('Users', () => {
