@@ -22,7 +22,8 @@ npm install @lunogram/js-sdk
 ```typescript
 import { Lunogram } from '@lunogram/js-sdk'
 
-const lunogram = new Lunogram('your-api-key')
+// The project UUID is required and scopes every request to that project.
+const lunogram = new Lunogram('your-api-key', 'your-project-uuid')
 
 // Identify a user
 await lunogram.user.upsert({
@@ -45,6 +46,27 @@ await lunogram.organization.upsert({
     name: 'Acme Corp',
 })
 ```
+
+## Project Scoping
+
+Every Lunogram Client API request is scoped to a single **project**. You supply
+the project UUID once, when constructing the client, and the SDK injects it into
+every request path automatically — you never pass it per call.
+
+All Client API endpoints live under `/api/client/projects/{projectId}/...`:
+
+| Operation                | Path                                                              |
+| ------------------------ | ----------------------------------------------------------------- |
+| Users                    | `/api/client/projects/{projectId}/users`                          |
+| User events              | `/api/client/projects/{projectId}/users/events`                   |
+| User scheduled           | `/api/client/projects/{projectId}/users/scheduled`                |
+| Organizations            | `/api/client/projects/{projectId}/organizations`                  |
+| Organization members     | `/api/client/projects/{projectId}/organizations/users`            |
+| Organization events      | `/api/client/projects/{projectId}/organizations/events`           |
+| Organization scheduled   | `/api/client/projects/{projectId}/organizations/scheduled`        |
+
+The `projectId` must be a valid UUID; the client throws a `ValidationError` at
+construction time if it is missing, empty, or malformed.
 
 ## Identity Model
 
@@ -69,7 +91,10 @@ The SDK automatically generates an anonymous identifier for each session. When y
 ```typescript
 import { BrowserClient } from '@lunogram/js-sdk'
 
-const client = new BrowserClient({ apiKey: 'your-api-key' })
+const client = new BrowserClient({
+    apiKey: 'your-api-key',
+    projectId: 'your-project-uuid',
+})
 
 // anonymousId is auto-generated
 client.user.anonymousId
@@ -100,7 +125,7 @@ The SDK is also exposed on `window.Lunogram`:
 
 ```html
 <script>
-    const lunogram = new Lunogram('your-api-key')
+    const lunogram = new Lunogram('your-api-key', 'your-project-uuid')
     lunogram.user.upsert({
         identifier: [{ externalId: 'user-123' }],
         email: 'user@example.com',
@@ -115,6 +140,7 @@ import { Client } from '@lunogram/js-sdk'
 
 const client = new Client({
     apiKey: 'your-api-key',
+    projectId: 'your-project-uuid', // required — scopes all requests to this project
     urlEndpoint: 'https://your-api.com/api', // optional
 })
 

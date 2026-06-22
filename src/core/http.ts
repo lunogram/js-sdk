@@ -1,5 +1,5 @@
 import { ClientProps } from '../types'
-import { mapKeys } from '../utils'
+import { mapKeys, isUuid } from '../utils'
 import { DefaultEndpoint } from './constants'
 import {
     LunogramError,
@@ -23,10 +23,20 @@ const statusErrorFactories: Partial<Record<number, () => LunogramError>> = {
 export class HttpHandler {
     readonly #apiKey: string
     readonly #baseUrl: string
+    readonly #projectId: string
 
     constructor(props: ClientProps) {
+        const projectId = props.projectId?.trim()
+        if (!projectId) {
+            throw new ValidationError('A non-empty `projectId` is required to create a Lunogram client')
+        }
+        if (!isUuid(projectId)) {
+            throw new ValidationError('`projectId` must be a valid UUID')
+        }
+
         this.#apiKey = props.apiKey
         this.#baseUrl = props.urlEndpoint ?? DefaultEndpoint
+        this.#projectId = projectId
     }
 
     async get<T = unknown>(path: string, data?: unknown): Promise<T> {
@@ -42,7 +52,7 @@ export class HttpHandler {
     }
 
     async #request<T>(method: HttpMethod, path: string, data?: unknown): Promise<T> {
-        const url = `${this.#baseUrl}/client/${path}`
+        const url = `${this.#baseUrl}/client/projects/${this.#projectId}/${path}`
 
         try {
             const response = await fetch(url, {
