@@ -2,7 +2,7 @@ import { BrowserClient } from './platform/browser'
 import { ClientNamespace } from './core/factory'
 
 export * from './core/client'
-export * from './core/http'
+export * from './core/transport'
 export * from './core/errors'
 export * from './core/resources'
 export * from './types'

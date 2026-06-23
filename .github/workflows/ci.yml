@@ -2,14 +2,14 @@ name: CI
 
 on:
   push:
+  pull_request:
 
 jobs:
-  lint:
-    name: "Lint Code"
+  build:
+    name: "Build & Test"
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v5
       - uses: pnpm/action-setup@v4
@@ -20,5 +20,24 @@ jobs:
         with:
           node-version: ${{ vars.NODEJS_VERSION }}
           cache: 'pnpm'
+
       - run: pnpm install
-      - run: pnpm run lint
+
+      # Drift check: regenerate the low-level layer from the vendored spec and
+      # fail if the committed output is stale. The generated code under
+      # `src/gen/` must always match `spec/client.yaml`.
+      - name: Generate client layer
+        run: pnpm generate
+      - name: Verify generated code is up to date
+        run: |
+          git diff --exit-code src/gen || {
+            echo "::error::Generated code in src/gen is out of date. Run 'pnpm generate' and commit the result."
+            exit 1
+          }
+
+      - name: Build
+        run: pnpm run build
+      - name: Lint
+        run: pnpm run lint
+      - name: Test
+        run: pnpm test

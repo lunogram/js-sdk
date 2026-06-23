@@ -1,4 +1,4 @@
-import { HttpHandler } from './http'
+import { Transport } from './transport'
 import { ClientProps } from '../types'
 import { UserResource, OrganizationResource } from './resources'
 
@@ -7,13 +7,13 @@ export interface ClientNamespace {
     organization: OrganizationResource
 }
 
-export function createClientNamespace(http: HttpHandler): ClientNamespace {
+export function createClientNamespace(transport: Transport): ClientNamespace {
     return {
-        user: new UserResource(http),
-        organization: new OrganizationResource(http),
+        user: new UserResource(transport),
+        organization: new OrganizationResource(transport),
     }
 }
 
-export function createHttpHandler(props: ClientProps): HttpHandler {
-    return new HttpHandler(props)
+export function createTransport(props: ClientProps): Transport {
+    return new Transport(props)
 }

@@ -1,0 +1,80 @@
+name: Spec Sync
+
+# Bump bot for the vendored OpenAPI spec.
+#
+# Re-fetches `spec/client.yaml` from the pinned ref recorded in `spec/SOURCE.md`,
+# regenerates the low-level layer (`src/gen/`), and — if anything changed — opens
+# a PR. This keeps the SDK in step with the platform spec without a manual fetch.
+#
+# Note: this syncs *at the current pin*. Bumping the pin itself (e.g. to a new
+# release tag) is a manual edit to `spec/SOURCE.md` (and its raw URL below is
+# re-read from that file each run, so a bumped pin is picked up automatically).
+
+on:
+  schedule:
+    # Weekly, Monday 06:00 UTC.
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    name: "Re-fetch spec & regenerate"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ vars.PNPM_VERSION }}
+      - name: Set-up Node
+        uses: actions/setup-node@v5
+        with:
+          node-version: ${{ vars.NODEJS_VERSION }}
+          cache: 'pnpm'
+
+      - run: pnpm install
+
+      # The raw URL (repo + spec path + pinned ref) is single-sourced in
+      # spec/SOURCE.md; read it from the fenced ```...``` block there so the pin
+      # only ever lives in one place.
+      - name: Resolve spec URL from SOURCE.md
+        id: source
+        run: |
+          url="$(grep -Eo 'https://raw\.githubusercontent\.com/[^ )]+resources\.yml' spec/SOURCE.md | head -n1)"
+          if [ -z "$url" ]; then
+            echo "::error::Could not find the raw spec URL in spec/SOURCE.md"
+            exit 1
+          fi
+          echo "Spec URL: $url"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Re-fetch spec
+        run: curl -fsSL "${{ steps.source.outputs.url }}" -o spec/client.yaml
+
+      - name: Regenerate client layer
+        run: pnpm generate
+
+      # Open (or update) a PR only when the vendored spec or generated output
+      # actually changed.
+      - name: Open PR on drift
+        uses: peter-evans/create-pull-request@v7
+        with:
+          add-paths: |
+            spec/client.yaml
+            src/gen/**
+          branch: chore/spec-sync
+          commit-message: "chore: sync OpenAPI spec & regenerate client layer"
+          title: "chore: sync OpenAPI spec & regenerate client layer"
+          body: |
+            Automated spec sync.
+
+            Re-fetched `spec/client.yaml` from the pinned ref in `spec/SOURCE.md`
+            and regenerated `src/gen/` via `pnpm generate`.
+
+            Review the diff and merge if the changes look correct. If the spec
+            should track a different ref, update `spec/SOURCE.md` first.
+          labels: |
+            dependencies
+            automated

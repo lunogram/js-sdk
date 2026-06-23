@@ -4,21 +4,20 @@ import {
     OrganizationResponse,
     OrganizationUserRequest,
     RemoveOrganizationUserRequest,
-} from "../../../types"
-import { BaseResource } from "../base"
-import { HttpHandler } from "../../http"
-import { OrganizationScheduledResource } from "./scheduled"
-import { OrganizationEventsResource } from "./events"
+} from '../../../types'
+import { BaseResource } from '../base'
+import { Transport } from '../../transport'
+import { OrganizationScheduledResource } from './scheduled'
+import { OrganizationEventsResource } from './events'
 
 export class OrganizationResource extends BaseResource {
-    readonly endpoint = 'organizations'
     readonly schedule: OrganizationScheduledResource
     readonly events: OrganizationEventsResource
 
-    constructor(http: HttpHandler) {
-        super(http)
-        this.schedule = new OrganizationScheduledResource(http)
-        this.events = new OrganizationEventsResource(http)
+    constructor(transport: Transport) {
+        super(transport)
+        this.schedule = new OrganizationScheduledResource(transport)
+        this.events = new OrganizationEventsResource(transport)
     }
 
     /**
@@ -27,7 +26,12 @@ export class OrganizationResource extends BaseResource {
      * @returns Promise resolving to the created/updated organization
      */
     async upsert(data: OrganizationRequest): Promise<OrganizationResponse> {
-        return this.post(data)
+        return this.call<OrganizationResponse>(() =>
+            this.client.POST('/api/client/projects/{projectID}/organizations', {
+                params: this.withProject(),
+                body: data as never,
+            }),
+        )
     }
 
     /**
@@ -36,7 +40,12 @@ export class OrganizationResource extends BaseResource {
      * @returns Promise resolving when organization is deleted
      */
     async delete(data: DeleteOrganizationRequest): Promise<void> {
-        return this.remove(data)
+        await this.call<void>(() =>
+            this.client.DELETE('/api/client/projects/{projectID}/organizations', {
+                params: this.withProject(),
+                body: data as never,
+            }),
+        )
     }
 
     /**
@@ -45,7 +54,12 @@ export class OrganizationResource extends BaseResource {
      * @returns Promise resolving when user is added
      */
     async addUser(data: OrganizationUserRequest): Promise<void> {
-        return this.post(data, 'organizations/users')
+        await this.call<void>(() =>
+            this.client.POST('/api/client/projects/{projectID}/organizations/users', {
+                params: this.withProject(),
+                body: data as never,
+            }),
+        )
     }
 
     /**
@@ -54,6 +68,11 @@ export class OrganizationResource extends BaseResource {
      * @returns Promise resolving when user is removed
      */
     async removeUser(data: RemoveOrganizationUserRequest): Promise<void> {
-        return this.remove(data, 'organizations/users')
+        await this.call<void>(() =>
+            this.client.DELETE('/api/client/projects/{projectID}/organizations/users', {
+                params: this.withProject(),
+                body: data as never,
+            }),
+        )
     }
 }
