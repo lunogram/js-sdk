@@ -1,5 +1,5 @@
-import { BaseResource } from './../base'
-import { HttpHandler } from '../../http'
+import { BaseResource } from '../base'
+import { Transport } from '../../transport'
 import {
     UpsertUserRequest,
     DeleteUserRequest,
@@ -9,14 +9,13 @@ import { UserScheduledResource } from './scheduled'
 import { UserEventsResource } from './events'
 
 export class UserResource extends BaseResource {
-    readonly endpoint = 'users'
     readonly schedule: UserScheduledResource
     readonly events: UserEventsResource
 
-    constructor(http: HttpHandler) {
-        super(http)
-        this.schedule = new UserScheduledResource(http)
-        this.events = new UserEventsResource(http)
+    constructor(transport: Transport) {
+        super(transport)
+        this.schedule = new UserScheduledResource(transport)
+        this.events = new UserEventsResource(transport)
     }
 
     /**
@@ -25,7 +24,12 @@ export class UserResource extends BaseResource {
      * @returns Promise resolving to the created/updated user
      */
     async upsert(data: UpsertUserRequest): Promise<UserResponse> {
-        return this.post(data)
+        return this.call<UserResponse>(() =>
+            this.client.POST('/api/client/projects/{projectID}/users', {
+                params: this.withProject(),
+                body: data as never,
+            }),
+        )
     }
 
     /**
@@ -34,6 +38,11 @@ export class UserResource extends BaseResource {
      * @returns Promise resolving when user is deleted
      */
     async delete(data: DeleteUserRequest): Promise<void> {
-        return this.remove(data)
+        await this.call<void>(() =>
+            this.client.DELETE('/api/client/projects/{projectID}/users', {
+                params: this.withProject(),
+                body: data as never,
+            }),
+        )
     }
 }

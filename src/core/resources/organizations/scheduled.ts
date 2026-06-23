@@ -9,15 +9,18 @@ import {
  * Resource for managing scheduled organization resources.
  */
 export class OrganizationScheduledResource extends BaseResource {
-    readonly endpoint = 'organizations/scheduled'
-
     /**
      * Creates or updates a scheduled resource for an organization.
      * @param data - Scheduled resource data including name, identifier, scheduledAt, interval, etc.
      * @returns Promise resolving to the accepted scheduled resource
      */
     async upsert(data: UpsertOrganizationScheduledRequest): Promise<ScheduledAcceptedResponse> {
-        return this.post(data)
+        return this.call<ScheduledAcceptedResponse>(() =>
+            this.client.POST('/api/client/projects/{projectID}/organizations/scheduled', {
+                params: this.withProject(),
+                body: data as never,
+            }),
+        )
     }
 
     /**
@@ -26,6 +29,11 @@ export class OrganizationScheduledResource extends BaseResource {
      * @returns Promise resolving when scheduled resource is deleted
      */
     async delete(data: DeleteOrganizationScheduledRequest): Promise<void> {
-        return this.remove(data)
+        await this.call<void>(() =>
+            this.client.DELETE('/api/client/projects/{projectID}/organizations/scheduled', {
+                params: this.withProject(),
+                body: data as never,
+            }),
+        )
     }
 }

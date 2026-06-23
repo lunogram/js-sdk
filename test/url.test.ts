@@ -27,9 +27,18 @@ describe('Client API URL construction', () => {
         vi.restoreAllMocks()
     })
 
+    // openapi-fetch invokes the global fetch with a `Request` object rather
+    // than a URL string, so read the resolved URL off the request's `.url`.
+    function urlOf(input: unknown): string {
+        if (input instanceof Request) {
+            return input.url
+        }
+        return String(input)
+    }
+
     function lastUrl(): string {
         const call = fetchMock.mock.calls.at(-1)
-        return String(call?.[0])
+        return urlOf(call?.[0])
     }
 
     it('prefixes user requests with /client/projects/{projectId}', async () => {
@@ -80,8 +89,47 @@ describe('Client API URL construction', () => {
         await client.user.upsert({ identifier: [{ externalId: 'a' }] })
         await client.user.upsert({ identifier: [{ externalId: 'b' }] })
         for (const call of fetchMock.mock.calls) {
-            expect(String(call[0])).toBe(`${urlEndpoint}/client/projects/${projectId}/users`)
+            expect(urlOf(call[0])).toBe(`${urlEndpoint}/client/projects/${projectId}/users`)
         }
+    })
+})
+
+describe('request encoding', () => {
+    let fetchMock: ReturnType<typeof mockFetch>
+
+    beforeEach(() => {
+        fetchMock = mockFetch()
+        vi.stubGlobal('fetch', fetchMock)
+    })
+
+    afterEach(() => {
+        vi.unstubAllGlobals()
+        vi.restoreAllMocks()
+    })
+
+    async function lastRequest(): Promise<Request> {
+        const call = fetchMock.mock.calls.at(-1)
+        return call?.[0] as Request
+    }
+
+    it('sends the Bearer auth header', async () => {
+        const client = new Client({ apiKey, projectId, urlEndpoint })
+        await client.user.upsert({ identifier: [{ externalId: 'user-1' }] })
+        const request = await lastRequest()
+        expect(request.headers.get('Authorization')).toBe(`Bearer ${apiKey}`)
+    })
+
+    it('maps the camelCase facade payload to snake_case on the wire', async () => {
+        const client = new Client({ apiKey, projectId, urlEndpoint })
+        await client.user.upsert({
+            identifier: [{ externalId: 'user-1' }],
+            email: 'a@b.com',
+        })
+        const body = await (await lastRequest()).clone().json()
+        expect(body).toEqual({
+            identifier: [{ external_id: 'user-1' }],
+            email: 'a@b.com',
+        })
     })
 })
 

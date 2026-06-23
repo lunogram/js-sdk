@@ -2,7 +2,7 @@ import { Client } from '../core/client'
 import { ClientProps, ExternalID } from '../types'
 import { generateUuid } from '../utils'
 import { UserResource } from '../core/resources/users/user'
-import { HttpHandler } from '../core/http'
+import { Transport } from '../core/transport'
 import {
     UpsertUserRequest,
     DeleteUserRequest,
@@ -19,8 +19,8 @@ import { UserScheduledResource } from '../core/resources/users/scheduled'
 class BrowserUserEventsResource extends UserEventsResource {
     readonly #getIdentifier: () => UserIdentifier
 
-    constructor(http: HttpHandler, getIdentifier: () => UserIdentifier) {
-        super(http)
+    constructor(transport: Transport, getIdentifier: () => UserIdentifier) {
+        super(transport)
         this.#getIdentifier = getIdentifier
     }
 
@@ -38,8 +38,8 @@ class BrowserUserEventsResource extends UserEventsResource {
 class BrowserUserScheduledResource extends UserScheduledResource {
     readonly #getIdentifier: () => UserIdentifier
 
-    constructor(http: HttpHandler, getIdentifier: () => UserIdentifier) {
-        super(http)
+    constructor(transport: Transport, getIdentifier: () => UserIdentifier) {
+        super(transport)
         this.#getIdentifier = getIdentifier
     }
 
@@ -70,11 +70,11 @@ class BrowserUserResource extends UserResource {
     override readonly events: BrowserUserEventsResource
     override readonly schedule: BrowserUserScheduledResource
 
-    constructor(http: HttpHandler) {
-        super(http)
+    constructor(transport: Transport) {
+        super(transport)
         this.#anonymousId = generateUuid()
-        this.events = new BrowserUserEventsResource(http, () => this.#buildIdentifier())
-        this.schedule = new BrowserUserScheduledResource(http, () => this.#buildIdentifier())
+        this.events = new BrowserUserEventsResource(transport, () => this.#buildIdentifier())
+        this.schedule = new BrowserUserScheduledResource(transport, () => this.#buildIdentifier())
     }
 
     #buildIdentifier(extraIdentifiers?: UserIdentifier): UserIdentifier {
@@ -139,6 +139,6 @@ export class BrowserClient extends Client {
 
     constructor(props: ClientProps) {
         super(props)
-        this.user = new BrowserUserResource(super.httpHandler)
+        this.user = new BrowserUserResource(super.transport)
     }
 }

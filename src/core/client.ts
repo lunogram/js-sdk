@@ -1,20 +1,20 @@
 import { ClientProps } from '../types'
-import { HttpHandler } from './http'
+import { Transport } from './transport'
 import { createClientNamespace, ClientNamespace } from './factory'
 
 export class Client {
     readonly user: ClientNamespace['user']
     readonly organization: ClientNamespace['organization']
-    readonly #http: HttpHandler
+    readonly #transport: Transport
 
     constructor(props: ClientProps) {
-        this.#http = new HttpHandler(props)
-        const namespace = createClientNamespace(this.#http)
+        this.#transport = new Transport(props)
+        const namespace = createClientNamespace(this.#transport)
         this.user = namespace.user
         this.organization = namespace.organization
     }
 
-    protected get httpHandler(): HttpHandler {
-        return this.#http
+    protected get transport(): Transport {
+        return this.#transport
     }
 }
