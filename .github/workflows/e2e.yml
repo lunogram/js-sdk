@@ -25,3 +25,4 @@ jobs:
         env:
           LUNOGRAM_API_KEY: ${{ secrets.LUNOGRAM_API_KEY }}
           LUNOGRAM_API_URL: ${{ secrets.LUNOGRAM_API_URL }}
+          LUNOGRAM_PROJECT_ID: ${{ secrets.LUNOGRAM_PROJECT_ID }}
