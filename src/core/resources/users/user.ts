@@ -7,15 +7,21 @@ import {
 } from '../../../types'
 import { UserScheduledResource } from './scheduled'
 import { UserEventsResource } from './events'
+import { UserInboxResource } from './inbox'
+import { UserDevicesResource } from './devices'
 
 export class UserResource extends BaseResource {
     readonly schedule: UserScheduledResource
     readonly events: UserEventsResource
+    readonly inbox: UserInboxResource
+    readonly devices: UserDevicesResource
 
     constructor(transport: Transport) {
         super(transport)
         this.schedule = new UserScheduledResource(transport)
         this.events = new UserEventsResource(transport)
+        this.inbox = new UserInboxResource(transport)
+        this.devices = new UserDevicesResource(transport)
     }
 
     /**
