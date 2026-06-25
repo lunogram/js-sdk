@@ -68,7 +68,9 @@ class BrowserUserDevicesResource extends UserDevicesResource {
         this.#getIdentifier = getIdentifier
     }
 
-    async register(data: DeviceRegistration): Promise<void> {
+    async register(
+        data: Omit<DeviceRegistration, 'identifier'> & { identifier?: UserIdentifier },
+    ): Promise<void> {
         return super.register({
             ...data,
             identifier: data.identifier ?? this.#getIdentifier(),

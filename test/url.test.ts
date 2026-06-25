@@ -235,6 +235,58 @@ describe('extended Client API endpoints', () => {
         const body = await (call?.[0] as Request).clone().json()
         expect(body).toEqual({ user_id: 'user-1' })
     })
+
+    function lastMethod(): string {
+        return (fetchMock.mock.calls.at(-1)?.[0] as Request).method
+    }
+
+    it('routes the remaining user + organization write endpoints', async () => {
+        const client = new Client({ apiKey, projectId, urlEndpoint })
+
+        await client.user.delete({ identifier: [{ externalId: 'u' }] })
+        expect(lastPath()).toBe(`${base}/users`)
+        expect(lastMethod()).toBe('DELETE')
+
+        await client.user.schedule.delete({ name: 'r', identifier: [{ externalId: 'u' }] })
+        expect(lastPath()).toBe(`${base}/users/scheduled`)
+        expect(lastMethod()).toBe('DELETE')
+
+        await client.organization.delete({ identifier: [{ externalId: 'o' }] })
+        expect(lastPath()).toBe(`${base}/organizations`)
+        expect(lastMethod()).toBe('DELETE')
+
+        await client.organization.removeUser({
+            organization: { identifier: [{ externalId: 'o' }] },
+            user: { identifier: [{ externalId: 'u' }] },
+        })
+        expect(lastPath()).toBe(`${base}/organizations/users`)
+        expect(lastMethod()).toBe('DELETE')
+
+        await client.organization.schedule.upsert({
+            name: 's',
+            identifier: [{ externalId: 'o' }],
+            scheduledAt: new Date().toISOString(),
+        })
+        expect(lastPath()).toBe(`${base}/organizations/scheduled`)
+        expect(lastMethod()).toBe('POST')
+
+        await client.organization.schedule.delete({ name: 's', identifier: [{ externalId: 'o' }] })
+        expect(lastPath()).toBe(`${base}/organizations/scheduled`)
+        expect(lastMethod()).toBe('DELETE')
+    })
+
+    it('routes the remaining organization inbox endpoints', async () => {
+        const client = new Client({ apiKey, projectId, urlEndpoint })
+
+        await client.organization.inbox.count({ source: 'default', externalId: 'o', channel: 'inbox' })
+        expect(lastPath()).toBe(`${base}/organizations/inbox/count`)
+
+        await client.organization.inbox.markRead([{ target: [{ externalId: 'o' }], messageId: 'm' }])
+        expect(lastPath()).toBe(`${base}/organizations/inbox/read`)
+
+        await client.organization.inbox.markArchived([{ target: [{ externalId: 'o' }], messageId: 'm' }])
+        expect(lastPath()).toBe(`${base}/organizations/inbox/archived`)
+    })
 })
 
 describe('projectId validation', () => {
