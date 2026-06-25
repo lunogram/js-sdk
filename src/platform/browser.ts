@@ -12,9 +12,11 @@ import {
     UpsertUserScheduledRequest,
     DeleteUserScheduledRequest,
     ScheduledAcceptedResponse,
+    DeviceRegistration,
 } from '../types'
 import { UserEventsResource } from '../core/resources/users/events'
 import { UserScheduledResource } from '../core/resources/users/scheduled'
+import { UserDevicesResource } from '../core/resources/users/devices'
 
 class BrowserUserEventsResource extends UserEventsResource {
     readonly #getIdentifier: () => UserIdentifier
@@ -58,6 +60,22 @@ class BrowserUserScheduledResource extends UserScheduledResource {
     }
 }
 
+class BrowserUserDevicesResource extends UserDevicesResource {
+    readonly #getIdentifier: () => UserIdentifier
+
+    constructor(transport: Transport, getIdentifier: () => UserIdentifier) {
+        super(transport)
+        this.#getIdentifier = getIdentifier
+    }
+
+    async register(data: DeviceRegistration): Promise<void> {
+        return super.register({
+            ...data,
+            identifier: data.identifier ?? this.#getIdentifier(),
+        })
+    }
+}
+
 class BrowserUserResource extends UserResource {
     readonly #anonymousId: string
     /**
@@ -69,12 +87,14 @@ class BrowserUserResource extends UserResource {
     #externalId?: string
     override readonly events: BrowserUserEventsResource
     override readonly schedule: BrowserUserScheduledResource
+    override readonly devices: BrowserUserDevicesResource
 
     constructor(transport: Transport) {
         super(transport)
         this.#anonymousId = generateUuid()
         this.events = new BrowserUserEventsResource(transport, () => this.#buildIdentifier())
         this.schedule = new BrowserUserScheduledResource(transport, () => this.#buildIdentifier())
+        this.devices = new BrowserUserDevicesResource(transport, () => this.#buildIdentifier())
     }
 
     #buildIdentifier(extraIdentifiers?: UserIdentifier): UserIdentifier {

@@ -9,15 +9,18 @@ import { BaseResource } from '../base'
 import { Transport } from '../../transport'
 import { OrganizationScheduledResource } from './scheduled'
 import { OrganizationEventsResource } from './events'
+import { OrganizationInboxResource } from './inbox'
 
 export class OrganizationResource extends BaseResource {
     readonly schedule: OrganizationScheduledResource
     readonly events: OrganizationEventsResource
+    readonly inbox: OrganizationInboxResource
 
     constructor(transport: Transport) {
         super(transport)
         this.schedule = new OrganizationScheduledResource(transport)
         this.events = new OrganizationEventsResource(transport)
+        this.inbox = new OrganizationInboxResource(transport)
     }
 
     /**

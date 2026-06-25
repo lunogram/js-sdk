@@ -38,6 +38,20 @@ export class Lunogram {
     get organization(): ClientNamespace['organization'] {
         return this.client.organization
     }
+
+    /**
+     * Access push notification configuration (e.g. the VAPID public key).
+     */
+    get push(): ClientNamespace['push'] {
+        return this.client.push
+    }
+
+    /**
+     * Access session token minting for end users.
+     */
+    get sessions(): ClientNamespace['sessions'] {
+        return this.client.sessions
+    }
 }
 
 declare global {

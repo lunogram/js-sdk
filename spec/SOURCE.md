@@ -1,38 +1,32 @@
 # Spec source
 
-`spec/client.yaml` is **vendored** (committed) from the Lunogram platform repo.
-The SDK's low-level layer (`src/gen/schema.ts`) is generated from it via
-`pnpm generate`. Do not hand-edit either file.
+`spec/client.yaml` is **vendored** (committed) from a Lunogram platform
+**release**. The SDK's low-level layer (`src/gen/schema.ts`) is generated from
+it via `pnpm generate`. Do not hand-edit either file.
 
-| Field        | Value                                                                                 |
-| ------------ | ------------------------------------------------------------------------------------- |
-| Source repo  | https://github.com/lunogram/platform                                                  |
-| Spec path    | `internal/http/controllers/v1/client/oapi/resources.yml`                              |
-| Pinned ref   | `a12f901dc98e7ced44efbad27a388e8bf5ee0f3a`                                            |
+| Field       | Value                                |
+| ----------- | ------------------------------------ |
+| Source repo | https://github.com/lunogram/platform |
+| Pinned tag  | `v0.1.0-rc.1`                        |
+| Spec asset  | `client.yaml`                        |
 
-Raw URL used by `spec-sync.yml` to re-fetch:
+Release asset URL to re-fetch the spec:
 
 ```
-https://raw.githubusercontent.com/lunogram/platform/a12f901dc98e7ced44efbad27a388e8bf5ee0f3a/internal/http/controllers/v1/client/oapi/resources.yml
+https://github.com/lunogram/platform/releases/download/v0.1.0-rc.1/client.yaml
 ```
 
 ## About the pin
 
-The ref above is the head of platform **PR #262**'s branch — a branch/commit
-pin used during development. Pinning to a commit means **no platform release is
-required** to consume the spec: any ref (branch, tag, or SHA) is fetchable from
-the public repo via the raw URL.
-
-**TODO:** once the platform cuts a release that ships the client spec (e.g.
-`client.yaml` from a `v*.*.*` tag), flip the pinned ref to that tag for a stable,
-reproducible source.
+The SDK pins a specific platform **release tag**. Every tagged platform release
+publishes the client OpenAPI spec as a `client.yaml` asset (see the platform's
+`.github/workflows/release.yml` → `openapi-specs` job), so the spec is fetched
+from a stable, versioned, immutable source — no platform checkout or branch pin
+required.
 
 ## How to bump the pin
 
-1. Update the **Pinned ref** value above (and the raw URL).
-2. Run `pnpm generate` to regenerate `src/gen/schema.ts`.
-3. Commit `spec/` and `src/gen/` together.
-
-The `spec-sync.yml` workflow automates re-fetching at the current pin and opens a
-PR when the spec or generated output drifts; bumping the pin itself is a manual
-edit to this file.
+1. Update the **Pinned tag** value above and the release asset URL to the new tag.
+2. Re-fetch the spec into `spec/client.yaml` from the release asset URL above.
+3. Run `pnpm generate` to regenerate `src/gen/schema.ts`.
+4. Commit `spec/` and `src/gen/` together.
