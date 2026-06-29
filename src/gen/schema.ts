@@ -983,6 +983,12 @@ export interface components {
         };
         UpsertUserScheduledRequest: {
             /**
+             * Format: uuid
+             * @description The id of the schedule assignment. Omit to create a new assignment (multiple assignments may share the same name per user); supply an existing id to update that assignment in place. The id is returned in the response.
+             * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+             */
+            id?: string | null;
+            /**
              * @description The name of the scheduled resource
              * @example renewal_date
              */
@@ -1017,6 +1023,12 @@ export interface components {
             } | null;
         };
         UpsertOrganizationScheduledRequest: {
+            /**
+             * Format: uuid
+             * @description The id of the schedule assignment. Omit to create a new assignment (multiple assignments may share the same name per organization); supply an existing id to update that assignment in place. The id is returned in the response.
+             * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+             */
+            id?: string | null;
             /**
              * @description The name of the scheduled resource
              * @example contract_renewal
@@ -1053,11 +1065,17 @@ export interface components {
         };
         DeleteUserScheduledRequest: {
             /**
-             * @description The name of the scheduled resource to delete
+             * Format: uuid
+             * @description The id of a specific schedule assignment to delete. When provided, only that instance is removed. Either id or name is required.
+             * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+             */
+            id?: string | null;
+            /**
+             * @description The name of the scheduled resource to delete. When provided (and id is omitted), every assignment with this name for the user is removed. Either id or name is required.
              * @example renewal_date
              */
-            name: string;
-            identifier?: components["schemas"]["UserIdentifier"];
+            name?: string | null;
+            identifier: components["schemas"]["UserIdentifier"];
         };
         ScheduledAccepted: {
             /**
@@ -1084,10 +1102,16 @@ export interface components {
         };
         DeleteOrganizationScheduledRequest: {
             /**
-             * @description The name of the scheduled resource to delete
+             * Format: uuid
+             * @description The id of a specific schedule assignment to delete. When provided, only that instance is removed. Either id or name is required.
+             * @example a1b2c3d4-e5f6-7890-abcd-ef1234567890
+             */
+            id?: string | null;
+            /**
+             * @description The name of the scheduled resource to delete. When provided (and id is omitted), every assignment with this name for the organization is removed. Either id or name is required.
              * @example contract_renewal
              */
-            name: string;
+            name?: string | null;
             identifier: components["schemas"]["OrganizationIdentifier"];
         };
     };

@@ -7,13 +7,13 @@ it via `pnpm generate`. Do not hand-edit either file.
 | Field       | Value                                |
 | ----------- | ------------------------------------ |
 | Source repo | https://github.com/lunogram/platform |
-| Pinned tag  | `v0.1.0-rc.1`                        |
+| Pinned tag  | `v0.1.0-rc.2`                        |
 | Spec asset  | `client.yaml`                        |
 
 Release asset URL to re-fetch the spec:
 
 ```
-https://github.com/lunogram/platform/releases/download/v0.1.0-rc.1/client.yaml
+https://github.com/lunogram/platform/releases/download/v0.1.0-rc.2/client.yaml
 ```
 
 ## About the pin
